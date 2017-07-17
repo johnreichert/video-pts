@@ -42,6 +42,10 @@ namespace video_ptz
             this.comboBox.SelectionChanged += ComboBox_SelectionChanged;
             this.button_left.Click += Button_left_Click;
             this.button_right.Click += Button_right_Click;
+            this.button_zoom_in.Click += Button_zoom_in_Click;
+            this.button_zoom_out.Click += Button_zoom_out_Click;
+            this.button_tilt_up.Click += Button_tilt_up_Click;
+            this.button_tilt_down.Click += Button_tilt_down_Click;
         }
 
 
@@ -86,10 +90,6 @@ namespace video_ptz
 
             var result = _mediaCapture.VideoDeviceController.Pan.TrySetValue(pan + 1000);
             Debug.WriteLine("pan right result: {0}", result);
-            result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt);
-            Debug.WriteLine("tilt result: {0}", result);
-            result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom);
-            Debug.WriteLine("zoom result: {0}", result);
 
             return true;
 
@@ -111,15 +111,95 @@ namespace video_ptz
 
             var result = _mediaCapture.VideoDeviceController.Pan.TrySetValue(pan - 1000);
             Debug.WriteLine("pan left result: {0}", result);
-            result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt);
-            Debug.WriteLine("tilt result: {0}", result);
-            result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom);
+
+            return;
+
+        }
+
+
+
+        private void Button_zoom_in_Click(object sender, RoutedEventArgs e)
+        {
+            double pan, tilt, zoom;
+
+            _mediaCapture.VideoDeviceController.Pan.TryGetValue(out pan);
+            Debug.WriteLine("pan: {0}", pan);
+            _mediaCapture.VideoDeviceController.Tilt.TryGetValue(out tilt);
+            Debug.WriteLine("tilt: {0}", tilt);
+            _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
+            Debug.WriteLine("zoom: {0}", zoom);
+
+            Debug.WriteLine("try to zoom to: {0}", zoom + 20);
+
+            var result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom + 20);
             Debug.WriteLine("zoom result: {0}", result);
 
             return;
 
         }
 
+
+        private void Button_zoom_out_Click(object sender, RoutedEventArgs e)
+        {
+            double pan, tilt, zoom;
+
+            _mediaCapture.VideoDeviceController.Pan.TryGetValue(out pan);
+            Debug.WriteLine("pan: {0}", pan);
+            _mediaCapture.VideoDeviceController.Tilt.TryGetValue(out tilt);
+            Debug.WriteLine("tilt: {0}", tilt);
+            _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
+            Debug.WriteLine("zoom: {0}", zoom);
+
+            Debug.WriteLine("try to zoom to: {0}", zoom - 20);
+
+            var result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom - 20);
+            Debug.WriteLine("zoom result: {0}", result);
+
+            return;
+
+        }
+
+
+        private void Button_tilt_up_Click(object sender, RoutedEventArgs e)
+        {
+            double pan, tilt, zoom;
+
+            _mediaCapture.VideoDeviceController.Pan.TryGetValue(out pan);
+            Debug.WriteLine("pan: {0}", pan);
+            _mediaCapture.VideoDeviceController.Tilt.TryGetValue(out tilt);
+            Debug.WriteLine("tilt: {0}", tilt);
+            _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
+            Debug.WriteLine("zoom: {0}", zoom);
+
+            Debug.WriteLine("try to tilt to: {0}", tilt + 500);
+
+            var result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt + 500);
+            Debug.WriteLine("tilt result: {0}", result);
+
+            return;
+
+        }
+
+
+        private void Button_tilt_down_Click(object sender, RoutedEventArgs e)
+        {
+            double pan, tilt, zoom;
+
+            _mediaCapture.VideoDeviceController.Pan.TryGetValue(out pan);
+            Debug.WriteLine("pan: {0}", pan);
+            _mediaCapture.VideoDeviceController.Tilt.TryGetValue(out tilt);
+            Debug.WriteLine("tilt: {0}", tilt);
+            _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
+            Debug.WriteLine("zoom: {0}", zoom);
+
+            Debug.WriteLine("try to tilt to: {0}", tilt - 500);
+
+            var result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt - 500);
+            Debug.WriteLine("tilt result: {0}", result);
+
+            return;
+
+        }
 
 
         public async Task<bool> initializeCamera(string deviceId)

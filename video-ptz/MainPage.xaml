@@ -11,8 +11,12 @@
         <ComboBox x:Name="comboBox" HorizontalAlignment="Stretch" Height="38" VerticalAlignment="Top" Margin="51,141,34,0" ItemsSource="{x:Bind deviceList}" d:LayoutOverrides="LeftPosition, RightPosition">
         </ComboBox>
 
-        <Button x:Name="button_left" VerticalAlignment="Top" Margin="51,250,0,0" Height="32" Width="99" Content="Pan Left"/>
-        <Button x:Name="button_right" Content="Pan Right" VerticalAlignment="Top" Margin="0,250,97,0" HorizontalAlignment="Right"/>
+        <Button x:Name="button_left" VerticalAlignment="Top" Margin="10,228,0,0" Height="32" Width="99" Content="Pan Left"/>
+        <Button x:Name="button_right" Content="Pan Right" VerticalAlignment="Top" Margin="120,228,0,0" HorizontalAlignment="Left"/>
+        <Button x:Name="button_zoom_in" Content="Zoom In" VerticalAlignment="Top" Margin="17,273,0,0" HorizontalAlignment="Left"/>
+        <Button x:Name="button_zoom_out" Content="Zoom Out" VerticalAlignment="Top" Margin="120,273,152,0" HorizontalAlignment="Left" />
+        <Button x:Name="button_tilt_up" Content="Tilt Up" VerticalAlignment="Top" Margin="17,314,0,294" HorizontalAlignment="Left" />
+        <Button x:Name="button_tilt_down" Content="Tilt Down" VerticalAlignment="Top" Margin="120,314,0,294" HorizontalAlignment="Left" />
 
         <CaptureElement x:Name="PreviewControl" Width="320" Height="240" Margin="17,0,34,10" VerticalAlignment="Bottom" Stretch="Uniform" />
 
