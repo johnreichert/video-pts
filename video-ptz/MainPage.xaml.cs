@@ -35,6 +35,11 @@ namespace video_ptz
         ObservableCollection<DeviceListItem> deviceList = new ObservableCollection<DeviceListItem>();
         DisplayRequest _displayRequest = new DisplayRequest();
 
+        int pan_step = 20;
+        int tilt_step = 20;
+        int zoom_step = 20;
+
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -46,6 +51,13 @@ namespace video_ptz
             this.button_zoom_out.Click += Button_zoom_out_Click;
             this.button_tilt_up.Click += Button_tilt_up_Click;
             this.button_tilt_down.Click += Button_tilt_down_Click;
+            this.Unloaded += MainPage_Unloaded;
+        }
+
+
+        private async void MainPage_Unloaded(object sender, RoutedEventArgs e)
+        {
+            await disposeMedia();
         }
 
 
@@ -86,9 +98,9 @@ namespace video_ptz
             _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
             Debug.WriteLine("zoom: {0}", zoom);
 
-            Debug.WriteLine("try to pan to: {0}", pan + 1000);
+            Debug.WriteLine("try to pan to: {0}", pan + pan_step);
 
-            var result = _mediaCapture.VideoDeviceController.Pan.TrySetValue(pan + 1000);
+            var result = _mediaCapture.VideoDeviceController.Pan.TrySetValue(pan + pan_step);
             Debug.WriteLine("pan right result: {0}", result);
 
             return true;
@@ -107,9 +119,9 @@ namespace video_ptz
             _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
             Debug.WriteLine("zoom: {0}", zoom);
 
-            Debug.WriteLine("try to pan to: {0}", pan - 1000);
+            Debug.WriteLine("try to pan to: {0}", pan - pan_step);
 
-            var result = _mediaCapture.VideoDeviceController.Pan.TrySetValue(pan - 1000);
+            var result = _mediaCapture.VideoDeviceController.Pan.TrySetValue(pan - pan_step);
             Debug.WriteLine("pan left result: {0}", result);
 
             return;
@@ -129,9 +141,9 @@ namespace video_ptz
             _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
             Debug.WriteLine("zoom: {0}", zoom);
 
-            Debug.WriteLine("try to zoom to: {0}", zoom + 20);
+            Debug.WriteLine("try to zoom to: {0}", zoom + zoom_step);
 
-            var result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom + 20);
+            var result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom + zoom_step);
             Debug.WriteLine("zoom result: {0}", result);
 
             return;
@@ -150,9 +162,9 @@ namespace video_ptz
             _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
             Debug.WriteLine("zoom: {0}", zoom);
 
-            Debug.WriteLine("try to zoom to: {0}", zoom - 20);
+            Debug.WriteLine("try to zoom to: {0}", zoom - zoom_step);
 
-            var result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom - 20);
+            var result = _mediaCapture.VideoDeviceController.Zoom.TrySetValue(zoom - zoom_step);
             Debug.WriteLine("zoom result: {0}", result);
 
             return;
@@ -171,9 +183,9 @@ namespace video_ptz
             _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
             Debug.WriteLine("zoom: {0}", zoom);
 
-            Debug.WriteLine("try to tilt to: {0}", tilt + 500);
+            Debug.WriteLine("try to tilt to: {0}", tilt + tilt_step);
 
-            var result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt + 500);
+            var result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt + tilt_step);
             Debug.WriteLine("tilt result: {0}", result);
 
             return;
@@ -192,9 +204,9 @@ namespace video_ptz
             _mediaCapture.VideoDeviceController.Zoom.TryGetValue(out zoom);
             Debug.WriteLine("zoom: {0}", zoom);
 
-            Debug.WriteLine("try to tilt to: {0}", tilt - 500);
+            Debug.WriteLine("try to tilt to: {0}", tilt - tilt_step);
 
-            var result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt - 500);
+            var result = _mediaCapture.VideoDeviceController.Tilt.TrySetValue(tilt - tilt_step);
             Debug.WriteLine("tilt result: {0}", result);
 
             return;
@@ -204,6 +216,8 @@ namespace video_ptz
 
         public async Task<bool> initializeCamera(string deviceId)
         {
+
+            await disposeMedia();
 
             var settings = new MediaCaptureInitializationSettings
             {
@@ -220,9 +234,48 @@ namespace video_ptz
             PreviewControl.Source = _mediaCapture;
             await _mediaCapture.StartPreviewAsync();
             
-            Debug.WriteLine("Pan supported: {0}", _mediaCapture.VideoDeviceController.Pan.Capabilities.Supported);
-            Debug.WriteLine("Tilt supported: {0}", _mediaCapture.VideoDeviceController.Tilt.Capabilities.Supported);
-            Debug.WriteLine("Zoom supported: {0}", _mediaCapture.VideoDeviceController.Zoom.Capabilities.Supported);
+
+            if (_mediaCapture.VideoDeviceController.Pan.Capabilities.Supported)
+            {
+                Debug.WriteLine("Pan supported: min={0}, max={1}",
+                  _mediaCapture.VideoDeviceController.Pan.Capabilities.Min,
+                  _mediaCapture.VideoDeviceController.Pan.Capabilities.Max);
+                pan_step = (int)((_mediaCapture.VideoDeviceController.Pan.Capabilities.Max - _mediaCapture.VideoDeviceController.Pan.Capabilities.Min) / 10);
+                Debug.WriteLine("Pan step: {0}", pan_step);
+            }
+            else
+            {
+                Debug.WriteLine("Pan NOT supported");
+            }
+
+
+            if (_mediaCapture.VideoDeviceController.Tilt.Capabilities.Supported)
+            {
+                Debug.WriteLine("Tilt supported: min={0}, max={1}",
+                  _mediaCapture.VideoDeviceController.Tilt.Capabilities.Min,
+                  _mediaCapture.VideoDeviceController.Tilt.Capabilities.Max);
+                tilt_step = (int) ((_mediaCapture.VideoDeviceController.Tilt.Capabilities.Max - _mediaCapture.VideoDeviceController.Tilt.Capabilities.Min) / 10);
+                Debug.WriteLine("Tilt step: {0}", tilt_step);
+            }
+            else
+            {
+                Debug.WriteLine("Tilt NOT supported");
+            }
+
+
+            if (_mediaCapture.VideoDeviceController.Zoom.Capabilities.Supported)
+            {
+                Debug.WriteLine("Zoom supported: min={0}, max={1}",
+                  _mediaCapture.VideoDeviceController.Zoom.Capabilities.Min,
+                  _mediaCapture.VideoDeviceController.Zoom.Capabilities.Max);
+                zoom_step = (int)((_mediaCapture.VideoDeviceController.Zoom.Capabilities.Max - _mediaCapture.VideoDeviceController.Zoom.Capabilities.Min) / 10);
+                Debug.WriteLine("Zoom step: {0}", zoom_step);
+            }
+            else
+            {
+                Debug.WriteLine("Zoom NOT supported");
+            }
+
 
             double pan, tilt, zoom;
             var querySuccess = _mediaCapture.VideoDeviceController.Pan.TryGetValue(out pan);
@@ -239,7 +292,7 @@ namespace video_ptz
 
         }
 
-        public async Task<string> initializeMedia()
+        public async Task<bool> initializeMedia()
         {
             DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
 
@@ -248,7 +301,22 @@ namespace video_ptz
                 deviceList.Add(new DeviceListItem(device.Name, device.Id));
             }
 
-            return "";
+            return true;
+
+        }
+
+        private async Task<bool> disposeMedia()
+        {
+            if (_mediaCapture == null)
+            {
+                return true;
+            }
+
+            await _mediaCapture.StopPreviewAsync();
+            _mediaCapture.Dispose();
+            _mediaCapture = null;
+
+            return true;
 
         }
 
